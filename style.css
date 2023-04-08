@@ -29,3 +29,10 @@
     border: 1px solid #333;
 }
 
+.tetroCell{
+    width: 30px;
+    height: 30px;
+    border: 1px solid #333;
+    background-color: red;
+}
+
