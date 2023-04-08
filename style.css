@@ -5,8 +5,15 @@
 }
 
 .container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 90%;
     height: 100vh;
     margin: 0 auto;
     background-color: green;
+}
+
+#myCanvas{
+    border: 1px solid #333;
 }
