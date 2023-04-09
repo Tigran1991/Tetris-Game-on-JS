@@ -5,8 +5,8 @@ const TETROMINO_IDS = ["I", "O", "T", "J", "L", "S", "Z"];
 
 const TETROMINOS = {
     I: [
-        [0, 0, 0, 0],
         [1, 1, 1, 1],
+        [0, 0, 0, 0],
         [0, 0, 0, 0],
         [0, 0, 0, 0],
     ],
@@ -44,9 +44,9 @@ const TETROMINOS = {
 const getRandomId = (min, max) => Math.floor(Math.random() * (max - min) + min);
 
 const getRandomTetrominoById = () => {
-    const index = getRandomId(0, 6)
-    return TETROMINOS[TETROMINO_IDS[index]]
-}
+    const index = getRandomId(0, 6);
+    return TETROMINOS[TETROMINO_IDS[index]];
+};
 
 const makeGame = () => {
     const createMatrix = () => {
@@ -59,7 +59,7 @@ const makeGame = () => {
         return matrix;
     };
 
-    const MATRIX = createMatrix();
+    let MATRIX = createMatrix();
 
     const createBoard = () => {
         const board = document.createElement("div");
@@ -84,10 +84,10 @@ const makeGame = () => {
         const BOARD = createBoard();
         matrix.forEach((row) => {
             row.forEach((rowItem) => {
-                if(rowItem === 0){
+                if (rowItem === 0) {
                     const CELL = createCell();
                     BOARD.appendChild(CELL);
-                }else{
+                } else {
                     const TETRO_CELL = createTetroCell();
                     BOARD.appendChild(TETRO_CELL);
                 }
@@ -98,22 +98,42 @@ const makeGame = () => {
     renderBoard(MATRIX);
 
     const updateBoard = (matrix) => {
-        if(document.querySelector('.board') !== null){
-            document.querySelector('.board').remove()
+        if (document.querySelector(".board") !== null) {
+            document.querySelector(".board").remove();
         }
         renderBoard(matrix);
+    };
+
+    const todo = () => {
+        for (let i = MATRIX.length - 1; i >= 0; i--) {
+            for (let j = 0; j < MATRIX[i].length; j++) {
+                if(MATRIX[i][j] === 1){
+                    MATRIX[i][j] = 0;
+                    MATRIX[i + 1][j] = 1;
+                }
+            }
+        }
+        console.log(MATRIX)
+        updateBoard(MATRIX);
     }
 
     const addTetraminoInBoard = () => {
         const checkedTetromino = getRandomTetrominoById();
         for (let i = 0; i < checkedTetromino.length; i++) {
-            MATRIX[i].splice(4, checkedTetromino[i].length, checkedTetromino[i]);
-            MATRIX[i] = MATRIX[i].flat() 
+            MATRIX[i].splice(
+                4,
+                checkedTetromino[i].length,
+                checkedTetromino[i]
+            );
+            MATRIX[i] = MATRIX[i].flat();
         }
-        updateBoard(MATRIX)
-    }
+        updateBoard(MATRIX);
+        setInterval(() => {
+            todo()
+        }, 1000)
+    };
 
-    playBtn.addEventListener("click", addTetraminoInBoard)
+    playBtn.addEventListener("click", addTetraminoInBoard);
 };
 
 makeGame();
