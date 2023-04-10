@@ -98,14 +98,21 @@ const makeGame = () => {
     };
 
     const playGame = () => {
+        for (let i = 0; i < MATRIX.length; i++) {
+            for (let j = 0; j < MATRIX[i].length; j++) {
+                if (MATRIX[i][j] === 1) {
+                    MATRIX[i][j] = 2;
+                }
+            }
+        }
         const getNewTetromino = () => {
             const checkedTetromino = utils.getRandomTetrominoById();
-            let i = 0
+            let i = 0;
             checkedTetromino.forEach((element) => {
                 if (element.includes(1)) {
                     MATRIX[i].splice(4, element.length, element);
                     MATRIX[i] = MATRIX[i].flat();
-                    i++
+                    i++;
                 }
             });
         };
@@ -114,7 +121,7 @@ const makeGame = () => {
 
         const moveTetrominoBottom = () => {
             for (let i = MATRIX.length - 1; i >= 0; i--) {
-                if (MATRIX[i].includes(1) && MATRIX[i + 1] !== undefined) {
+                if (MATRIX[i + 1] !== undefined) {
                     for (let j = 0; j < MATRIX[i].length; j++) {
                         if (MATRIX[i][j] === 1) {
                             MATRIX[i][j] = 0;
@@ -127,13 +134,14 @@ const makeGame = () => {
                 ) {
                     clearInterval(interval);
                     i = 0;
+                    playGame();
                 }
             }
             updateBoard(MATRIX);
         };
 
-        updateBoard(MATRIX);
         const interval = setInterval(moveTetrominoBottom, 300);
+        updateBoard(MATRIX);
     };
 
     playBtn.addEventListener("click", playGame);
