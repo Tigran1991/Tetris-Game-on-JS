@@ -128,8 +128,6 @@ const makeGame = () => {
                         for (let j = 10; j >= 0; j--) {
                             if (MATRIX[i][j] === 1) {
                                 currentCoordinates.push({ x: i, y: j });
-                                // MATRIX[i][j] = 0;
-                                // MATRIX[i + 1][j] = 1;
                             } else {
                                 continue;
                             }
@@ -141,7 +139,7 @@ const makeGame = () => {
 
             const tetrominosElementsCoordinates = determineElementsCoordinates();
 
-            const a = tetrominosElementsCoordinates.map((coordinates) => {
+            const tetrominosMovement = tetrominosElementsCoordinates.map((coordinates) => {
                 if (
                     coordinates.x + 1 === 20 ||
                     MATRIX[coordinates.x + 1][coordinates.y] === 2
@@ -152,8 +150,8 @@ const makeGame = () => {
                 }
             });
 
-            if (!a.includes(true)) {
-                a.forEach((a1, i) => {
+            if (!tetrominosMovement.includes(true)) {
+                tetrominosMovement.forEach((movement, i) => {
                     MATRIX[currentCoordinates[i].x][
                         tetrominosElementsCoordinates[i].y
                     ] = 0;
