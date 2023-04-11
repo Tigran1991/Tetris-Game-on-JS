@@ -105,6 +105,9 @@ const makeGame = () => {
                 }
             }
         }
+
+        console.log(MATRIX);
+
         const getNewTetromino = () => {
             const checkedTetromino = utils.getRandomTetrominoById();
             let i = 0;
@@ -122,21 +125,26 @@ const makeGame = () => {
         const moveTetrominoBottom = () => {
             for (let i = MATRIX.length - 1; i >= 0; i--) {
                 if (MATRIX[i].includes(1)) {
-                    for (let j = 0; j < 10; j++) {
-                        if (MATRIX[i][j] === 1 && i !== MATRIX.length - 1) {
+                    for (let j = 10; j >= 0; j--) {
+                        if (MATRIX[i][j] === 1 && MATRIX[i + 1][j] === 0) {
                             MATRIX[i][j] = 0;
                             MATRIX[i + 1][j] = 1;
-                        }else if(i === MATRIX.length - 1){
-                            clearInterval(interval);
-                            i = 0;
+                        } else if (
+                            i === MATRIX.length - 1 ||
+                            (MATRIX[i][j] === 1 && MATRIX[i + 1][j] === 2)
+                        ) {
+                           clearInterval(interval);
+                           i = 0;
+                           j = 10;
                         }
                     }
                 }
             }
+
             updateBoard(MATRIX);
         };
 
-        const interval = setInterval(moveTetrominoBottom, 300);
+        const interval = setInterval(moveTetrominoBottom, 100);
         updateBoard(MATRIX);
     };
 
