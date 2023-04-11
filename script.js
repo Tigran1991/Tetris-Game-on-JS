@@ -140,15 +140,45 @@ const makeGame = () => {
             const tetrominosElementsCoordinates =
                 determineElementsCoordinates();
             if (e.key === "ArrowLeft") {
-                tetrominosElementsCoordinates.forEach((movement) => {
-                    MATRIX[movement.x][movement.y] = 0;
-                    MATRIX[movement.x][movement.y - 1] = 1;
-                });
+                const tetrominosMovement = tetrominosElementsCoordinates.map(
+                    (coordinates) => {
+                        if (
+                            coordinates.y - 1 === -1 ||
+                            MATRIX[coordinates.x][coordinates.y - 1] === 2
+                        ) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                );
+
+                if (!tetrominosMovement.includes(true)) {
+                    tetrominosElementsCoordinates.forEach((movement) => {
+                        MATRIX[movement.x][movement.y] = 0;
+                        MATRIX[movement.x][movement.y - 1] = 1;
+                    });
+                }
             } else if (e.key === "ArrowRight") {
-                tetrominosElementsCoordinates.reverse().forEach((movement) => {
-                    MATRIX[movement.x][movement.y] = 0;
-                    MATRIX[movement.x][movement.y + 1] = 1;
-                });
+                const tetrominosMovement = tetrominosElementsCoordinates.map(
+                    (coordinates) => {
+                        if (
+                            coordinates.y + 1 === 10 ||
+                            MATRIX[coordinates.x][coordinates.y + 1] === 2
+                        ) {
+                            return true;
+                        } else {
+                            return false;
+                        }
+                    }
+                );
+
+                if (!tetrominosMovement.includes(true)) {
+                    tetrominosElementsCoordinates.reverse().forEach((movement) => {
+                        MATRIX[movement.x][movement.y] = 0;
+                        MATRIX[movement.x][movement.y + 1] = 1;
+                    });
+                }
             }
 
             updateBoard(MATRIX);
