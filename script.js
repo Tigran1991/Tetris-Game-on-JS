@@ -106,8 +106,6 @@ const makeGame = () => {
             }
         }
 
-        console.log(MATRIX);
-
         const getNewTetromino = () => {
             const checkedTetromino = utils.getRandomTetrominoById();
             let i = 0;
@@ -123,28 +121,56 @@ const makeGame = () => {
         getNewTetromino();
 
         const moveTetrominoBottom = () => {
-            for (let i = MATRIX.length - 1; i >= 0; i--) {
-                if (MATRIX[i].includes(1)) {
-                    for (let j = 10; j >= 0; j--) {
-                        if (MATRIX[i][j] === 1 && MATRIX[i + 1][j] === 0) {
-                            MATRIX[i][j] = 0;
-                            MATRIX[i + 1][j] = 1;
-                        } else if (
-                            i === MATRIX.length - 1 ||
-                            (MATRIX[i][j] === 1 && MATRIX[i + 1][j] === 2)
-                        ) {
-                           clearInterval(interval);
-                           i = 0;
-                           j = 10;
+            const currentCoordinates = [];
+            const determineElementsCoordinates = () => {
+                for (let i = MATRIX.length - 1; i >= 0; i--) {
+                    if (MATRIX[i].includes(1)) {
+                        for (let j = 10; j >= 0; j--) {
+                            if (MATRIX[i][j] === 1) {
+                                currentCoordinates.push({ x: i, y: j });
+                                // MATRIX[i][j] = 0;
+                                // MATRIX[i + 1][j] = 1;
+                            } else {
+                                continue;
+                            }
                         }
                     }
                 }
+                return currentCoordinates;
+            };
+
+            const tetrominosElementsCoordinates = determineElementsCoordinates();
+
+            const a = tetrominosElementsCoordinates.map((coordinates) => {
+                if (
+                    coordinates.x + 1 === 20 ||
+                    MATRIX[coordinates.x + 1][coordinates.y] === 2
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+
+            if (!a.includes(true)) {
+                a.forEach((a1, i) => {
+                    MATRIX[currentCoordinates[i].x][
+                        tetrominosElementsCoordinates[i].y
+                    ] = 0;
+                    MATRIX[currentCoordinates[i].x + 1][
+                        tetrominosElementsCoordinates[i].y
+                    ] = 1;
+                });
+                determineElementsCoordinates();
+            } else {
+                clearInterval(interval);
             }
 
             updateBoard(MATRIX);
         };
 
-        const interval = setInterval(moveTetrominoBottom, 100);
+        const interval = setInterval(moveTetrominoBottom, 300);
+
         updateBoard(MATRIX);
     };
 
