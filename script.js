@@ -121,20 +121,16 @@ const makeGame = () => {
 
         const moveTetrominoBottom = () => {
             for (let i = MATRIX.length - 1; i >= 0; i--) {
-                if (MATRIX[i + 1] !== undefined) {
-                    for (let j = 0; j < MATRIX[i].length; j++) {
-                        if (MATRIX[i][j] === 1) {
+                if (MATRIX[i].includes(1)) {
+                    for (let j = 0; j < 10; j++) {
+                        if (MATRIX[i][j] === 1 && i !== MATRIX.length - 1) {
                             MATRIX[i][j] = 0;
                             MATRIX[i + 1][j] = 1;
+                        }else if(i === MATRIX.length - 1){
+                            clearInterval(interval);
+                            i = 0;
                         }
                     }
-                } else if (
-                    MATRIX[i].includes(1) &&
-                    MATRIX[i + 1] === undefined
-                ) {
-                    clearInterval(interval);
-                    i = 0;
-                    playGame();
                 }
             }
             updateBoard(MATRIX);
