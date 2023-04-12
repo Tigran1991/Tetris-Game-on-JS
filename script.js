@@ -97,6 +97,69 @@ const makeGame = () => {
         renderBoard(matrix);
     };
 
+    const determineElementsCoordinates = () => {
+        const currentCoordinates = [];
+        for (let i = MATRIX.length - 1; i >= 0; i--) {
+            if (MATRIX[i].includes(1)) {
+                for (let j = 0; j < 10; j++) {
+                    if (MATRIX[i][j] === 1) {
+                        currentCoordinates.push({ x: i, y: j });
+                    } else {
+                        continue;
+                    }
+                }
+            }
+        }
+        return currentCoordinates;
+    };
+
+    document.addEventListener("keydown", (e) => {
+        const tetrominosElementsCoordinates = determineElementsCoordinates();
+        if (e.key === "ArrowLeft") {
+            const tetrominosMovement = tetrominosElementsCoordinates.map(
+                (coordinates) => {
+                    if (
+                        coordinates.y - 1 === -1 ||
+                        MATRIX[coordinates.x][coordinates.y - 1] === 2
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            );
+
+            if (!tetrominosMovement.includes(true)) {
+                tetrominosElementsCoordinates.forEach((movement) => {
+                    MATRIX[movement.x][movement.y] = 0;
+                    MATRIX[movement.x][movement.y - 1] = 1;
+                });
+            }
+        } else if (e.key === "ArrowRight") {
+            const tetrominosMovement = tetrominosElementsCoordinates.map(
+                (coordinates) => {
+                    if (
+                        coordinates.y + 1 === 10 ||
+                        MATRIX[coordinates.x][coordinates.y + 1] === 2
+                    ) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+            );
+
+            if (!tetrominosMovement.includes(true)) {
+                tetrominosElementsCoordinates.reverse().forEach((movement) => {
+                    MATRIX[movement.x][movement.y] = 0;
+                    MATRIX[movement.x][movement.y + 1] = 1;
+                });
+            }
+        }
+
+        updateBoard(MATRIX);
+    });
+
     const playGame = () => {
         for (let i = 0; i < MATRIX.length; i++) {
             for (let j = 0; j < MATRIX[i].length; j++) {
@@ -120,69 +183,7 @@ const makeGame = () => {
 
         getNewTetromino();
 
-        const determineElementsCoordinates = () => {
-            const currentCoordinates = [];
-            for (let i = MATRIX.length - 1; i >= 0; i--) {
-                if (MATRIX[i].includes(1)) {
-                    for (let j = 0; j < 10; j++) {
-                        if (MATRIX[i][j] === 1) {
-                            currentCoordinates.push({ x: i, y: j });
-                        } else {
-                            continue;
-                        }
-                    }
-                }
-            }
-            return currentCoordinates;
-        };
-
-        document.addEventListener("keydown", (e) => {
-            const tetrominosElementsCoordinates =
-                determineElementsCoordinates();
-            if (e.key === "ArrowLeft") {
-                const tetrominosMovement = tetrominosElementsCoordinates.map(
-                    (coordinates) => {
-                        if (
-                            coordinates.y - 1 === -1 ||
-                            MATRIX[coordinates.x][coordinates.y - 1] === 2
-                        ) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                );
-
-                if (!tetrominosMovement.includes(true)) {
-                    tetrominosElementsCoordinates.forEach((movement) => {
-                        MATRIX[movement.x][movement.y] = 0;
-                        MATRIX[movement.x][movement.y - 1] = 1;
-                    });
-                }
-            } else if (e.key === "ArrowRight") {
-                const tetrominosMovement = tetrominosElementsCoordinates.map(
-                    (coordinates) => {
-                        if (
-                            coordinates.y + 1 === 10 ||
-                            MATRIX[coordinates.x][coordinates.y + 1] === 2
-                        ) {
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                );
-
-                if (!tetrominosMovement.includes(true)) {
-                    tetrominosElementsCoordinates.reverse().forEach((movement) => {
-                        MATRIX[movement.x][movement.y] = 0;
-                        MATRIX[movement.x][movement.y + 1] = 1;
-                    });
-                }
-            }
-
-            updateBoard(MATRIX);
-        });
+        
 
         const moveTetrominoBottom = () => {
             const tetrominosElementsCoordinates =
@@ -213,7 +214,7 @@ const makeGame = () => {
             updateBoard(MATRIX);
         };
 
-        const interval = setInterval(moveTetrominoBottom, 2000);
+        const interval = setInterval(moveTetrominoBottom, 900);
 
         updateBoard(MATRIX);
     };
