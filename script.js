@@ -137,9 +137,8 @@ const makeGame = () => {
     };
 
     const playGame = () => {
+        const generatedTetromino = getNewTetromino();
         const makeNewTetrominoMovement = () => {
-            const todo = getNewTetromino();
-
             updateBoard(MATRIX);
             const moveTetrominoBottom = () => {
                 const tetrominosElementsCoordinates =
@@ -177,7 +176,7 @@ const makeGame = () => {
                 updateBoard(MATRIX);
             };
 
-            let interval = setInterval(moveTetrominoBottom, 300);
+            let interval = setInterval(moveTetrominoBottom, 1000);
 
             pauseBtn.addEventListener("click", () => {
                 clearInterval(interval);
@@ -187,10 +186,10 @@ const makeGame = () => {
                 interval = setInterval(moveTetrominoBottom, 300);
             });
 
-            return todo;
+            return generatedTetromino;
         };
 
-        const todo = makeNewTetrominoMovement();
+        let currentTetromino = makeNewTetrominoMovement();
 
         document.addEventListener("keydown", (e) => {
             const tetrominosElementsCoordinates =
@@ -238,32 +237,32 @@ const makeGame = () => {
                     let n;
                     for (let i = 0; i < MATRIX.length; i++) {
                         for (let j = 0; j < MATRIX[i].length; j++) {
-                            if (MATRIX[i][j] === 1){
-                                f = i;
+                            if (MATRIX[i][j] === 1) {
+                                f = i - 1;
                                 n = j;
                                 MATRIX[i][j] = 0;
-                            };
+                            }
                         }
                     }
 
                     const rotateTetrominoToRight = () => {
-                        const a = [];
-                        for (let i = 0; i < todo.length; i++) {
-                            a.push([]);
+                        const updatedTetromino = [];
+                        for (let i = 0; i < currentTetromino.length; i++) {
+                            updatedTetromino.push([]);
                         }
                         let k = 0;
-                        for (let i = todo.length - 1; i >= 0; i--) {
-                            for (let j = 0; j < todo[i].length; j++) {
-                                a[j][k] = todo[i][j];
+                        for (let i = currentTetromino.length - 1; i >= 0; i--) {
+                            for (let j = 0; j < currentTetromino[i].length; j++) {
+                                updatedTetromino[j][k] = currentTetromino[i][j];
                             }
                             k++;
                         }
-                        return a;
+                        return updatedTetromino;
                     };
 
-                    const todo1 = rotateTetrominoToRight();
+                    currentTetromino = rotateTetrominoToRight();
                     let i = f;
-                    todo1.forEach((element) => {
+                    currentTetromino.forEach((element) => {
                         if (element.includes(1)) {
                             MATRIX[i].splice(n - 1, element.length, element);
                             MATRIX[i] = MATRIX[i].flat();
