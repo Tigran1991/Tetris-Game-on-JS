@@ -121,6 +121,8 @@ const makeGame = () => {
         return currentCoordinates;
     };
 
+    let k = 4;
+
     const getNewTetromino = () => {
         const checkedTetromino = getRandomTetrominoById();
         let i = 0;
@@ -183,7 +185,7 @@ const makeGame = () => {
             });
 
             resumeBtn.addEventListener("click", () => {
-                interval = setInterval(moveTetrominoBottom, 300);
+                interval = setInterval(moveTetrominoBottom, 1000);
             });
 
             return generatedTetromino;
@@ -214,6 +216,7 @@ const makeGame = () => {
                         MATRIX[movement.x][movement.y - 1] = 1;
                     });
                 }
+                k = k - 1;
             } else if (e.key === "ArrowUp") {
                 const tetrominosMovement = tetrominosElementsCoordinates.map(
                     (coordinates) => {
@@ -244,7 +247,6 @@ const makeGame = () => {
                             }
                         }
                     }
-
                     const rotateTetrominoToRight = () => {
                         const updatedTetromino = [];
                         for (let i = 0; i < currentTetromino.length; i++) {
@@ -264,7 +266,7 @@ const makeGame = () => {
                     let i = f;
                     currentTetromino.forEach((element) => {
                         if (element.includes(1)) {
-                            MATRIX[i].splice(n - 1, element.length, element);
+                            MATRIX[i].splice(k, element.length, element);
                             MATRIX[i] = MATRIX[i].flat();
                             i++;
                         }
@@ -292,6 +294,7 @@ const makeGame = () => {
                             MATRIX[movement.x][movement.y + 1] = 1;
                         });
                 }
+                k = k + 1;
             }
 
             updateBoard(MATRIX);
