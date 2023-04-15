@@ -20,3 +20,14 @@ const rotateTetrominoToRight = () => {
 }
 
 rotateTetrominoToRight();
+
+pauseBtn.addEventListener("click", () => {
+    clearInterval(interval);
+});
+
+resumeBtn.addEventListener("click", () => {
+    interval = setInterval(
+        moveTetrominoBottom,
+        GAME_SETTINGS.tetroMoveingInterval
+    );
+});
