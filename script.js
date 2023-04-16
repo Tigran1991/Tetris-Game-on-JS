@@ -217,11 +217,10 @@ const makeNewTetrominoMovement = (matrix) => {
         };
 
         updateMatrixAfterMoveing();
-        
         updateBoard(matrix);
     };
 
-    let interval = setInterval(() => moveTetrominoBottom(matrix), 400);
+    let interval = setInterval(() => moveTetrominoBottom(matrix), 1000);
 
     const handleKeyboardEvents = (e) => {
         const tetrominosElementsCoordinates = getTetrominoCoordinates(matrix);
@@ -254,10 +253,6 @@ const makeNewTetrominoMovement = (matrix) => {
                         coordinates.x + 1 === GAME_SETTINGS.lengthOfMatrix ||
                         matrix[coordinates.x + 1][coordinates.y] ===
                             GAME_SETTINGS.doneTetroCellsValue ||
-                        coordinates.y - 1 === -1 ||
-                        matrix[coordinates.x][coordinates.y - 1] ===
-                            GAME_SETTINGS.doneTetroCellsValue ||
-                        coordinates.y + 1 === 10 ||
                         matrix[coordinates.x][coordinates.y + 1] ===
                             GAME_SETTINGS.doneTetroCellsValue
                     ) {
