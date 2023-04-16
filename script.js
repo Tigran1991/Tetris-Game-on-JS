@@ -175,6 +175,8 @@ const checkRowItems = (matrix) => {
 };
 
 const makeNewTetrominoMovement = (matrix) => {
+    let k = 4;
+    let todo = 1000;
     checkRowItems(matrix);
     let currentTetromino = getNewTetromino(matrix);
     updateBoard(matrix);
@@ -220,9 +222,10 @@ const makeNewTetrominoMovement = (matrix) => {
         updateBoard(matrix);
     };
 
-    let interval = setInterval(() => moveTetrominoBottom(matrix), 1000);
+    let interval = setInterval(() => moveTetrominoBottom(matrix), todo);
 
     const handleKeyboardEvents = (e) => {
+        console.log(e);
         const tetrominosElementsCoordinates = getTetrominoCoordinates(matrix);
         if (e.key === "ArrowLeft") {
             const tetrominoMovementAbilityOptions =
@@ -245,6 +248,7 @@ const makeNewTetrominoMovement = (matrix) => {
                     matrix[movement.x][movement.y - 1] =
                         GAME_SETTINGS.tetroCellsValue;
                 });
+                k--;
             }
         } else if (e.key === "ArrowUp") {
             const tetrominoMovementAbilityOptions =
@@ -269,7 +273,6 @@ const makeNewTetrominoMovement = (matrix) => {
                     for (let j = 0; j < matrix[i].length; j++) {
                         if (matrix[i][j] === GAME_SETTINGS.tetroCellsValue) {
                             tetrominoCurrentXPosition = i - 1;
-                            tetrominoCurrentYPosition = j - 1;
                             matrix[i][j] = GAME_SETTINGS.emptyCellsValue;
                         }
                     }
@@ -282,7 +285,7 @@ const makeNewTetrominoMovement = (matrix) => {
                 currentTetromino.forEach((element) => {
                     if (element.includes(GAME_SETTINGS.tetroCellsValue)) {
                         matrix[i].splice(
-                            tetrominoCurrentYPosition,
+                            k,
                             element.length,
                             element
                         );
@@ -313,6 +316,7 @@ const makeNewTetrominoMovement = (matrix) => {
                         GAME_SETTINGS.tetroCellsValue;
                 });
             }
+            k++;
         }
 
         updateBoard(matrix);
