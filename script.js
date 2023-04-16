@@ -126,7 +126,6 @@ const getNewTetromino = (matrix) => {
     checkedTetromino.forEach((element) => {
         if (element.includes(1)) {
             matrix[i].splice(4, element.length, element);
-            console.log(matrix);
             matrix[i] = matrix[i].flat();
             i++;
         }
@@ -205,12 +204,18 @@ const makeNewTetrominoMovement = (matrix) => {
                 makeNewTetrominoMovement(matrix);
             }
         };
-
+        for (let i = 0; i < matrix.length; i++) {
+            if(matrix[i].includes(2) && matrix[i].every(item => item === 2)){
+                matrix.splice(i, 1);
+                matrix.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+                updateBoard(matrix);
+            }
+        }
         updateMatrixAfterMoveing();
         updateBoard(matrix);
     };
 
-    let interval = setInterval(() => moveTetrominoBottom(matrix), 1000);
+    let interval = setInterval(() => moveTetrominoBottom(matrix), 300);
 
     const handleKeyboardEvents = (e) => {
         const tetrominosElementsCoordinates = getTetrominoCoordinates(matrix);
