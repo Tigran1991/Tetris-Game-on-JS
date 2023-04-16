@@ -164,7 +164,18 @@ const rotateTetrominoToRight = (tetromino) => {
     return updatedTetromino;
 };
 
+const checkRowItems = (matrix) => {
+    for (let i = 0; i < matrix.length; i++) {
+        if (matrix[i].includes(2) && matrix[i].every((item) => item === 2)) {
+            matrix.splice(i, 1);
+            matrix.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
+            updateBoard(matrix);
+        }
+    }
+};
+
 const makeNewTetrominoMovement = (matrix) => {
+    checkRowItems(matrix);
     let currentTetromino = getNewTetromino(matrix);
     updateBoard(matrix);
 
@@ -204,18 +215,13 @@ const makeNewTetrominoMovement = (matrix) => {
                 makeNewTetrominoMovement(matrix);
             }
         };
-        for (let i = 0; i < matrix.length; i++) {
-            if(matrix[i].includes(2) && matrix[i].every(item => item === 2)){
-                matrix.splice(i, 1);
-                matrix.unshift([0, 0, 0, 0, 0, 0, 0, 0, 0, 0]);
-                updateBoard(matrix);
-            }
-        }
+
         updateMatrixAfterMoveing();
+        
         updateBoard(matrix);
     };
 
-    let interval = setInterval(() => moveTetrominoBottom(matrix), 300);
+    let interval = setInterval(() => moveTetrominoBottom(matrix), 400);
 
     const handleKeyboardEvents = (e) => {
         const tetrominosElementsCoordinates = getTetrominoCoordinates(matrix);
