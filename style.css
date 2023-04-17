@@ -26,9 +26,11 @@ button{
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+    position: relative;
     width: 302px;
     height: 600px;
     border: 1px solid #333;
+    z-index: 0;
 }
 
 .cell{
@@ -42,5 +44,19 @@ button{
     height: 30px;
     border: 1px solid #333;
     background-color: red;
+}
+
+.game-board{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 175px;
+    width: 300px;
+    height: 200px;
+    border: 10px solid red;
+    border-radius: 10px;
+    background-color: rgb(67, 204, 67);
+    z-index: 1;
 }
 
