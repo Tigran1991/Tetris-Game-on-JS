@@ -31,3 +31,43 @@ resumeBtn.addEventListener("click", () => {
         GAME_SETTINGS.tetroMoveingInterval
     );
 });
+
+const tetrominoMovementAbilityOptions = tetrominosElementsCoordinates.map(
+    (coordinates) => {
+        if (
+            coordinates.x + 1 === GAME_SETTINGS.lengthOfMatrix ||
+            matrix[coordinates.x + 1][coordinates.y] ===
+                GAME_SETTINGS.doneTetroCellsValue ||
+            matrix[coordinates.x][coordinates.y + 1] ===
+                GAME_SETTINGS.doneTetroCellsValue
+        ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+);
+
+if (!tetrominoMovementAbilityOptions.includes(true)) {
+    let tetrominoCurrentXPosition;
+    for (let i = 0; i < matrix.length; i++) {
+        for (let j = 0; j < matrix[i].length; j++) {
+            if (matrix[i][j] === GAME_SETTINGS.tetroCellsValue) {
+                tetrominoCurrentXPosition = i - 1;
+                matrix[i][j] = GAME_SETTINGS.emptyCellsValue;
+            }
+        }
+    }
+
+    currentTetromino = rotateTetromino(currentTetromino);
+
+    let i = tetrominoCurrentXPosition;
+
+    currentTetromino.forEach((element) => {
+        if (element.includes(GAME_SETTINGS.tetroCellsValue)) {
+            matrix[i].splice(k, element.length, element);
+            matrix[i] = matrix[i].flat();
+            i++;
+        }
+    });
+}
