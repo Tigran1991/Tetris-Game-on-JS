@@ -11,7 +11,7 @@ const GAME_SETTINGS = {
     tetroCellsValue: 1,
     doneTetroCellsValue: 2,
     step: 1,
-    tetroMoveingInterval: 200,
+    tetroMoveingInterval: 400,
 };
 
 const TETROMINO_IDS = ["I", "O", "T", "J", "L", "S", "Z"];
@@ -90,19 +90,19 @@ const createGameStatusBoard = (gameStatusText) => {
     gameStatusBoard.appendChild(text);
 };
 
+const createMatrix = () => {
+    const initialMatrix = new Array(GAME_SETTINGS.lengthOfMatrix).fill();
+    const matrix = initialMatrix.map((row) => {
+        row = new Array(GAME_SETTINGS.lengthOfRows).fill(
+            GAME_SETTINGS.emptyCellsValue
+        );
+        return row;
+    });
+
+    return matrix;
+};
+
 const makeGame = () => {
-    const createMatrix = () => {
-        const initialMatrix = new Array(GAME_SETTINGS.lengthOfMatrix).fill();
-        const matrix = initialMatrix.map(() => {
-            const row = new Array(GAME_SETTINGS.lengthOfRows).fill(
-                GAME_SETTINGS.emptyCellsValue
-            );
-            return row;
-        });
-
-        return matrix;
-    };
-
     const MATRIX = createMatrix();
 
     const addNewtetrominoToMatrix = (initialTetromino) => {
@@ -264,9 +264,7 @@ const makeGame = () => {
             getTetrominoNewCoordinatesAfterMoveingLeft(
                 tetrominoCurrentCoordinates
             );
-        const canMoveLeft = isTetrominoCanMoveLeft(
-            tetrominoNewCoordinates
-        );
+        const canMoveLeft = isTetrominoCanMoveLeft(tetrominoNewCoordinates);
         if (canMoveLeft) {
             tetrominoCurrentCoordinates.forEach((coordinate) => {
                 MATRIX[coordinate.x][coordinate.y] =
@@ -280,14 +278,11 @@ const makeGame = () => {
     };
 
     const moveTetrominoRight = (tetrominoCurrentCoordinates) => {
-        debugger
         const tetrominoNewCoordinates =
             getTetrominoNewCoordinatesAfterMoveingRight(
                 tetrominoCurrentCoordinates
             );
-        const canMoveRight = isTetrominoCanMoveRight(
-            tetrominoNewCoordinates
-        );
+        const canMoveRight = isTetrominoCanMoveRight(tetrominoNewCoordinates);
         if (canMoveRight) {
             tetrominoCurrentCoordinates.forEach((coordinate) => {
                 MATRIX[coordinate.x][coordinate.y] =
@@ -300,8 +295,34 @@ const makeGame = () => {
         }
     };
 
+    const getTetrominoPositionFromTop = (currentCoordinates) => {
+        let positionsFromTop = [];
+        for (let i = 0; i < currentCoordinates.length; i++) {
+            positionsFromTop.push(currentCoordinates[i].x);
+        }
+
+        const positionFromTop = Math.min(...positionsFromTop);
+        return positionFromTop;
+    };
+
+    const getTetrominoPositionFromLeft = (currentCoordinates) => {
+        let positionsFromLeft = [];
+        for (let i = 0; i < currentCoordinates.length; i++) {
+            positionsFromLeft.push(currentCoordinates[i].y);
+        }
+        const positionFromLeft = Math.min(...positionsFromLeft);
+        return positionFromLeft;
+    };
+
     const moveTetrominoBottom = (board, interval) => {
         const tetrominoCurrentCoordinates = getTetrominoCurrentCoordinates();
+        const positionsFromTop = getTetrominoPositionFromTop(
+            tetrominoCurrentCoordinates
+        );
+        const positionsFromLeft = getTetrominoPositionFromLeft(
+            tetrominoCurrentCoordinates
+        );
+        console.log(`x: ${positionsFromTop}`, `y: ${positionsFromLeft}`);
         const tetrominoNewCoordinates = getTetrominoNewCoordinates(
             tetrominoCurrentCoordinates
         );
@@ -329,12 +350,13 @@ const makeGame = () => {
         }
     };
 
-    const makeNewTetrominoMovement = (board) => {       
+    const makeNewTetrominoMovement = (board) => {
         const randomIndex = generateRandomNumber(
             GAME_SETTINGS.rangeOfIndex[0],
             GAME_SETTINGS.rangeOfIndex[1]
         );
         const currentTetromino = getRandomTetromino(randomIndex);
+        console.log(currentTetromino);
         addNewtetrominoToMatrix(currentTetromino);
         updateBoard();
 
@@ -345,12 +367,14 @@ const makeGame = () => {
         document.addEventListener("keydown", handleKeyboardEvents);
     };
 
+    const rotateTetromino = () => {};
+
     const handleKeyboardEvents = (e) => {
         const tetrominoCurrentCoordinates = getTetrominoCurrentCoordinates();
         if (e.key === "ArrowLeft") {
             moveTetrominoLeft(tetrominoCurrentCoordinates);
         } else if (e.key === "ArrowUp") {
-            console.log("Helooo");
+            rotateTetromino();
         } else if (e.key === "ArrowRight") {
             moveTetrominoRight(tetrominoCurrentCoordinates);
         }
