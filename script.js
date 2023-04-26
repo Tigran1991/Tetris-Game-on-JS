@@ -11,7 +11,7 @@ const GAME_SETTINGS = {
     tetroCellsValue: 1,
     doneTetroCellsValue: 2,
     step: 1,
-    tetroMoveingInterval: 400,
+    tetroMoveingInterval: 1000,
 };
 
 const TETROMINO_IDS = ["I", "O", "T", "J", "L", "S", "Z"];
@@ -54,12 +54,21 @@ const TETROMINOS = {
     ],
 };
 
-const generateRandomNumber = (min, max) =>
-    Math.floor(Math.random() * (max - min) + min);
-
 const getRandomTetromino = (index) => {
     const checkedId = TETROMINO_IDS[index];
     return TETROMINOS[checkedId];
+};
+
+const createMatrix = () => {
+    const initialMatrix = new Array(GAME_SETTINGS.lengthOfMatrix).fill();
+    const matrix = initialMatrix.map((row) => {
+        row = new Array(GAME_SETTINGS.lengthOfRows).fill(
+            GAME_SETTINGS.emptyCellsValue
+        );
+        return row;
+    });
+
+    return matrix;
 };
 
 const createBoard = () => {
@@ -90,64 +99,47 @@ const createGameStatusBoard = (gameStatusText) => {
     gameStatusBoard.appendChild(text);
 };
 
-const createMatrix = () => {
-    const initialMatrix = new Array(GAME_SETTINGS.lengthOfMatrix).fill();
-    const matrix = initialMatrix.map((row) => {
-        row = new Array(GAME_SETTINGS.lengthOfRows).fill(
-            GAME_SETTINGS.emptyCellsValue
-        );
-        return row;
+const renderBoard = (matrix, board) => {
+    matrix.forEach((row) => {
+        row.forEach((rowItem) => {
+            if (rowItem === GAME_SETTINGS.emptyCellsValue) {
+                const CELL = createCell();
+                board.appendChild(CELL);
+            } else if (
+                rowItem === GAME_SETTINGS.tetroCellsValue ||
+                rowItem === GAME_SETTINGS.doneTetroCellsValue
+            ) {
+                const TETRO_CELL = createTetroCell();
+                board.appendChild(TETRO_CELL);
+            }
+        });
     });
-
-    return matrix;
 };
 
-const makeGame = () => {
-    const MATRIX = createMatrix();
-
-    const addNewtetrominoToMatrix = (initialTetromino) => {
+const playGame = (matrix, board) => {
+    const addNewTetrominoToMatrix = (initialTetromino) => {
         const tetromino = initialTetromino.filter((row) => row.includes(1));
         tetromino.forEach((element, i) => {
-            MATRIX[i].splice(4, element.length, element);
-            MATRIX[i] = MATRIX[i].flat();
+            matrix[i].splice(4, element.length, element);
+            matrix[i] = matrix[i].flat();
         });
+        updateBoard(matrix);
     };
-
-    const BOARD = createBoard();
-
-    const renderBoard = (board) => {
-        MATRIX.forEach((row) => {
-            row.forEach((rowItem) => {
-                if (rowItem === GAME_SETTINGS.emptyCellsValue) {
-                    const CELL = createCell();
-                    board.appendChild(CELL);
-                } else if (
-                    rowItem === GAME_SETTINGS.tetroCellsValue ||
-                    rowItem === GAME_SETTINGS.doneTetroCellsValue
-                ) {
-                    const TETRO_CELL = createTetroCell();
-                    board.appendChild(TETRO_CELL);
-                }
-            });
-        });
-    };
-
-    renderBoard(BOARD);
 
     const updateBoard = () => {
         if (document.querySelector(".board") !== null) {
             document.querySelector(".board").remove();
         }
         const BOARD = createBoard();
-        renderBoard(BOARD);
+        renderBoard(matrix, BOARD);
     };
 
-    const getTetrominoCurrentCoordinates = () => {
+    const getCurrentCoordinates = () => {
         const currentCoordinates = [];
-        for (let i = MATRIX.length - 1; i >= 0; i--) {
-            if (MATRIX[i].includes(1)) {
-                for (let j = 0; j < MATRIX[i].length; j++) {
-                    if (MATRIX[i][j] === 1) {
+        for (let i = matrix.length - 1; i >= 0; i--) {
+            if (matrix[i].includes(1)) {
+                for (let j = 0; j < matrix[i].length; j++) {
+                    if (matrix[i][j] === 1) {
                         currentCoordinates.push({ x: i, y: j });
                     }
                 }
@@ -156,7 +148,7 @@ const makeGame = () => {
         return currentCoordinates;
     };
 
-    const getTetrominoNewCoordinates = (currentCoordinates) => {
+    const getNewCoordinates = (currentCoordinates) => {
         const newCoordinates = currentCoordinates.map((coordinates) => {
             const updatedCoordinates = {};
             updatedCoordinates.x = coordinates.x + GAME_SETTINGS.step;
@@ -167,7 +159,7 @@ const makeGame = () => {
         return newCoordinates;
     };
 
-    const getTetrominoNewCoordinatesAfterMoveingLeft = (currentCoordinates) => {
+    const getNewCoordinatesAfterMoveingLeft = (currentCoordinates) => {
         const newCoordinates = currentCoordinates.map((coordinates) => {
             const updatedCoordinates = {};
             updatedCoordinates.x = coordinates.x;
@@ -182,9 +174,7 @@ const makeGame = () => {
         return newCoordinates;
     };
 
-    const getTetrominoNewCoordinatesAfterMoveingRight = (
-        currentCoordinates
-    ) => {
+    const getNewCoordinatesAfterMoveingRight = (currentCoordinates) => {
         const newCoordinates = currentCoordinates.map((coordinates) => {
             const updatedCoordinates = {};
             updatedCoordinates.x = coordinates.x;
@@ -202,8 +192,8 @@ const makeGame = () => {
     const isTetrominoCanMove = (newCoordinates) => {
         const tetrominoMovementAbility = newCoordinates.map((coordinate) => {
             if (
-                coordinate.x !== MATRIX.length &&
-                MATRIX[coordinate.x][coordinate.y] !==
+                coordinate.x !== matrix.length &&
+                matrix[coordinate.x][coordinate.y] !==
                     GAME_SETTINGS.doneTetroCellsValue
             ) {
                 return true;
@@ -223,7 +213,7 @@ const makeGame = () => {
         const tetrominoMovementAbility = newCoordinates.map((coordinate) => {
             if (
                 coordinate.y !== undefined &&
-                MATRIX[coordinate.x][coordinate.y - 1] !==
+                matrix[coordinate.x][coordinate.y - 1] !==
                     GAME_SETTINGS.doneTetroCellsValue
             ) {
                 return true;
@@ -243,7 +233,7 @@ const makeGame = () => {
         const tetrominoMovementAbility = newCoordinates.map((coordinate) => {
             if (
                 coordinate.y !== undefined &&
-                MATRIX[coordinate.x][coordinate.y + 1] !==
+                matrix[coordinate.x][coordinate.y + 1] !==
                     GAME_SETTINGS.doneTetroCellsValue
             ) {
                 return true;
@@ -259,134 +249,109 @@ const makeGame = () => {
         }
     };
 
-    const moveTetrominoLeft = (tetrominoCurrentCoordinates) => {
-        const tetrominoNewCoordinates =
-            getTetrominoNewCoordinatesAfterMoveingLeft(
-                tetrominoCurrentCoordinates
-            );
-        const canMoveLeft = isTetrominoCanMoveLeft(tetrominoNewCoordinates);
+    const moveTetrominoLeft = (currentCoordinates) => {
+        const newCoordinates =
+            getNewCoordinatesAfterMoveingLeft(currentCoordinates);
+        const canMoveLeft = isTetrominoCanMoveLeft(newCoordinates);
         if (canMoveLeft) {
-            tetrominoCurrentCoordinates.forEach((coordinate) => {
-                MATRIX[coordinate.x][coordinate.y] =
+            currentCoordinates.forEach((coordinate) => {
+                matrix[coordinate.x][coordinate.y] =
                     GAME_SETTINGS.emptyCellsValue;
             });
-            tetrominoNewCoordinates.forEach((coordinate) => {
-                MATRIX[coordinate.x][coordinate.y] =
+            newCoordinates.forEach((coordinate) => {
+                matrix[coordinate.x][coordinate.y] =
                     GAME_SETTINGS.tetroCellsValue;
             });
         }
     };
 
-    const moveTetrominoRight = (tetrominoCurrentCoordinates) => {
-        const tetrominoNewCoordinates =
-            getTetrominoNewCoordinatesAfterMoveingRight(
-                tetrominoCurrentCoordinates
-            );
-        const canMoveRight = isTetrominoCanMoveRight(tetrominoNewCoordinates);
+    const moveTetrominoRight = (currentCoordinates) => {
+        const newCoordinates =
+            getNewCoordinatesAfterMoveingRight(currentCoordinates);
+        const canMoveRight = isTetrominoCanMoveRight(newCoordinates);
         if (canMoveRight) {
-            tetrominoCurrentCoordinates.forEach((coordinate) => {
-                MATRIX[coordinate.x][coordinate.y] =
+            currentCoordinates.forEach((coordinate) => {
+                matrix[coordinate.x][coordinate.y] =
                     GAME_SETTINGS.emptyCellsValue;
             });
-            tetrominoNewCoordinates.forEach((coordinate) => {
-                MATRIX[coordinate.x][coordinate.y] =
+            newCoordinates.forEach((coordinate) => {
+                matrix[coordinate.x][coordinate.y] =
                     GAME_SETTINGS.tetroCellsValue;
             });
         }
     };
 
-    const getTetrominoPositionFromTop = (currentCoordinates) => {
-        let positionsFromTop = [];
-        for (let i = 0; i < currentCoordinates.length; i++) {
-            positionsFromTop.push(currentCoordinates[i].x);
-        }
-
-        const positionFromTop = Math.min(...positionsFromTop);
-        return positionFromTop;
+    const updatePreviousCellValues = (currentCoordinates) => {
+        currentCoordinates.forEach((coordinates) => {
+            matrix[coordinates.x][coordinates.y] =
+                GAME_SETTINGS.emptyCellsValue;
+        });
     };
 
-    const getTetrominoPositionFromLeft = (currentCoordinates) => {
-        let positionsFromLeft = [];
-        for (let i = 0; i < currentCoordinates.length; i++) {
-            positionsFromLeft.push(currentCoordinates[i].y);
-        }
-        const positionFromLeft = Math.min(...positionsFromLeft);
-        return positionFromLeft;
+    const updateNewCellValues = (newCoordinates) => {
+        newCoordinates.forEach((coordinates) => {
+            matrix[coordinates.x][coordinates.y] =
+                GAME_SETTINGS.tetroCellsValue;
+        });
     };
 
-    const moveTetrominoBottom = (board, interval) => {
-        const tetrominoCurrentCoordinates = getTetrominoCurrentCoordinates();
-        const positionsFromTop = getTetrominoPositionFromTop(
-            tetrominoCurrentCoordinates
-        );
-        const positionsFromLeft = getTetrominoPositionFromLeft(
-            tetrominoCurrentCoordinates
-        );
-        console.log(`x: ${positionsFromTop}`, `y: ${positionsFromLeft}`);
-        const tetrominoNewCoordinates = getTetrominoNewCoordinates(
-            tetrominoCurrentCoordinates
-        );
-        const canMove = isTetrominoCanMove(tetrominoNewCoordinates);
-        if (canMove) {
-            tetrominoCurrentCoordinates.forEach((coordinates) => {
-                MATRIX[coordinates.x][coordinates.y] =
-                    GAME_SETTINGS.emptyCellsValue;
-            });
-            tetrominoNewCoordinates.forEach((coordinates) => {
-                MATRIX[coordinates.x][coordinates.y] =
-                    GAME_SETTINGS.tetroCellsValue;
-            });
-        } else {
-            for (let i = 0; i < MATRIX.length; i++) {
-                for (let j = 0; j < MATRIX[i].length; j++) {
-                    if (MATRIX[i][j] === GAME_SETTINGS.tetroCellsValue) {
-                        MATRIX[i][j] = GAME_SETTINGS.doneTetroCellsValue;
-                    }
+    const updateDoneTetroCellValues = () => {
+        for (let i = 0; i < matrix.length; i++) {
+            for (let j = 0; j < matrix[i].length; j++) {
+                if (matrix[i][j] === GAME_SETTINGS.tetroCellsValue) {
+                    matrix[i][j] = GAME_SETTINGS.doneTetroCellsValue;
                 }
             }
-            clearInterval(interval);
-            document.removeEventListener("keydown", handleKeyboardEvents);
-            makeNewTetrominoMovement(board);
         }
     };
 
-    const makeNewTetrominoMovement = (board) => {
-        const randomIndex = generateRandomNumber(
-            GAME_SETTINGS.rangeOfIndex[0],
-            GAME_SETTINGS.rangeOfIndex[1]
-        );
-        const currentTetromino = getRandomTetromino(randomIndex);
-        console.log(currentTetromino);
-        addNewtetrominoToMatrix(currentTetromino);
-        updateBoard();
+    const handleKeyboardEvents = (e) => {
+        const currentCoordinates = getCurrentCoordinates(matrix);
+        if (e.key === "ArrowLeft") {
+            moveTetrominoLeft(currentCoordinates);
+        } else if (e.key === "ArrowUp") {
+            console.log("Helooo");
+        } else if (e.key === "ArrowRight") {
+            moveTetrominoRight(currentCoordinates);
+        }
 
+        updateBoard(matrix);
+    };
+
+    const moveBottom = () => {
         let interval = setInterval(() => {
-            moveTetrominoBottom(board, interval);
-            updateBoard();
-        }, GAME_SETTINGS.tetroMoveingInterval);
+            const currentCoordinates = getCurrentCoordinates(matrix);
+            const newCoordinates = getNewCoordinates(currentCoordinates);
+            const canMove = isTetrominoCanMove(newCoordinates);
+            if (canMove) {
+                updatePreviousCellValues(currentCoordinates);
+                updateNewCellValues(newCoordinates);
+                updateBoard(matrix);
+            } else {
+                updateDoneTetroCellValues(matrix);
+                clearInterval(interval);
+                document.removeEventListener("keydown", handleKeyboardEvents);
+                makeNewTetrominoMove(matrix, board);
+            }
+        }, 1000);
+    };
+
+    const makeNewTetrominoMove = () => {
+        const randomIndex = utils.generateRandomNumber(0, 6);
+        let currentTetromino = getRandomTetromino(randomIndex);
+        addNewTetrominoToMatrix(currentTetromino);
+        moveBottom();
         document.addEventListener("keydown", handleKeyboardEvents);
     };
 
-    const rotateTetromino = () => {};
-
-    const handleKeyboardEvents = (e) => {
-        const tetrominoCurrentCoordinates = getTetrominoCurrentCoordinates();
-        if (e.key === "ArrowLeft") {
-            moveTetrominoLeft(tetrominoCurrentCoordinates);
-        } else if (e.key === "ArrowUp") {
-            rotateTetromino();
-        } else if (e.key === "ArrowRight") {
-            moveTetrominoRight(tetrominoCurrentCoordinates);
-        }
-
-        updateBoard();
-    };
-
-    const playGame = () => {
-        makeNewTetrominoMovement(BOARD);
-    };
-
-    playBtn.addEventListener("click", () => playGame());
+    makeNewTetrominoMove(matrix, board);
 };
 
-makeGame();
+const newGame = () => {
+    const MATRIX = createMatrix();
+    const BOARD = createBoard();
+    renderBoard(MATRIX, BOARD);
+    playBtn.addEventListener("click", () => playGame(MATRIX, BOARD));
+};
+
+newGame();
